@@ -1,0 +1,19 @@
+name: Check Branch Prefix
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate_branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get branch name
+        id: branch_name
+        run: echo "::set-output name=branch::${GITHUB_HEAD_REF}"
+
+      - name: Validate branch prefix
+        if: ${{ !startsWith(steps.branch_name.outputs.branch, 'feature/') && !startsWith(steps.branch_name.outputs.branch, 'bug_fix/') }}
+        run: |
+          echo "Error: Pull requests to main must come from a branch starting with 'feature/' or 'bug_fix/'."
+          exit 1
